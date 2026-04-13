@@ -1,6 +1,7 @@
 # SPPO: Sequence-Level PPO for Long-Horizon Reasoning Tasks
 
-Official repository for the paper SPPO: Sequence-Level PPO for Long-Horizon Reasoning Tasks.
+Official repository for the paper **SPPO: Sequence-Level PPO for Long-Horizon Reasoning Tasks**.
+\[[arXiv](https://arxiv.org/abs/2604.08865)\]
 
 ## Announcement
 
