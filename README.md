@@ -34,7 +34,6 @@ Proximal Policy Optimization (PPO) was central to aligning Large Language Models
   </div>
 </div>
 
-*(Note: Images have been converted to `.png` format to ensure native rendering on GitHub and in Markdown viewers).*
 
 ## 🚀 Key Features
 
