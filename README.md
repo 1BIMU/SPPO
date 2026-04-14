@@ -17,7 +17,7 @@ Proximal Policy Optimization (PPO) was central to aligning Large Language Models
 - **Decoupled Small Critic**: Because scalar solvability estimation is significantly simpler than generative reasoning, SPPO enables training with a lightweight critic (e.g., 1.5B Critic for a 7B Policy), radically reducing VRAM requirements without sacrificing performance.
 
 <div align="center">
-  <img src="image/main.pdf" alt="SPPO Architecture" width="800"/>
+  <img src="image/main.png" alt="SPPO Architecture" width="800"/>
   <p><em>Figure 1: Overall Architecture of Sequence-Level PPO (SPPO).</em></p>
 </div>
 
@@ -25,16 +25,16 @@ Proximal Policy Optimization (PPO) was central to aligning Large Language Models
 
 <div align="center" style="display: flex; justify-content: center; gap: 20px;">
   <div style="text-align: center;">
-    <img src="image/memory_usage_percentage.pdf" alt="Memory Footprint Comparison" width="400"/>
+    <img src="image/memory_usage_percentage.png" alt="Memory Footprint Comparison" width="400"/>
     <p><em>Figure 2: Peak VRAM Allocation Analysis.</em></p>
   </div>
   <div style="text-align: center;">
-    <img src="image/efficiency_plot.pdf" alt="Training Efficiency" width="400"/>
+    <img src="image/efficiency_plot.png" alt="Training Efficiency" width="400"/>
     <p><em>Figure 3: Training Efficiency and Performance.</em></p>
   </div>
 </div>
 
-*(Note: If PDFs do not render natively on GitHub, we recommend converting these images to `.png` and updating the paths).*
+*(Note: Images have been converted to `.png` format to ensure native rendering on GitHub and in Markdown viewers).*
 
 ## 🚀 Key Features
 
