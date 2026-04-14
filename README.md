@@ -1,70 +1,106 @@
 # SPPO: Sequence-Level PPO for Long-Horizon Reasoning Tasks
 
-Official repository for the paper **SPPO: Sequence-Level PPO for Long-Horizon Reasoning Tasks**.
-\[[arXiv](https://arxiv.org/abs/2604.08865)\]
+[![arXiv](https://img.shields.io/badge/arXiv-2604.08865-b31b1b.svg)](https://arxiv.org/abs/2604.08865)
 
-## Announcement
+This repository serves as the official implementation of the paper **"SPPO: Sequence-Level PPO for Long-Horizon Reasoning Tasks"**.
 
-**2026.4.7: This paper has been accepted to ACL 2026 Main Conference.**
+## News
 
-## Quick Start
+- **[2026.04]** 🎉 This paper has been accepted to the **ACL 2026 Main Conference**!
 
-### 1. Environment Setup
+## 💡 Abstract
 
-First, run the environment installation script. This will:
-- Install UV package manager
-- Create a Python 3.10 virtual environment
-- Install vLLM, SGLang, and other dependencies
-- Install all required packages for the project
+Proximal Policy Optimization (PPO) was central to aligning Large Language Models (LLMs) in reasoning tasks with verifiable rewards. However, standard token-level PPO struggles in this setting due to the instability of temporal credit assignment over long Chain-of-Thought (CoT) horizons and the prohibitive memory cost of the value model. While critic-free alternatives like GRPO mitigate these issues, they incur significant computational overhead by requiring multiple samples for baseline estimation, severely limiting training throughput. 
+
+**Sequence-Level PPO (SPPO)** introduces a scalable algorithm that harmonizes the sample efficiency of PPO with the stability of outcome-based updates: shifting from a Multi-Step MDP to a **Sequence-Level Contextual Bandit**.
+- **Sequence-Level Optimization**: Treats the entire reasoning chain as a single atomic action, utilizing a decoupled scalar value function to derive low-variance advantage signals without multi-sampling.
+- **Decoupled Small Critic**: Because scalar solvability estimation is significantly simpler than generative reasoning, SPPO enables training with a lightweight critic (e.g., 1.5B Critic for a 7B Policy), radically reducing VRAM requirements without sacrificing performance.
+
+<div align="center">
+  <img src="image/main.pdf" alt="SPPO Architecture" width="800"/>
+  <p><em>Figure 1: Overall Architecture of Sequence-Level PPO (SPPO).</em></p>
+</div>
+
+<br>
+
+<div align="center" style="display: flex; justify-content: center; gap: 20px;">
+  <div style="text-align: center;">
+    <img src="image/memory_usage_percentage.pdf" alt="Memory Footprint Comparison" width="400"/>
+    <p><em>Figure 2: Peak VRAM Allocation Analysis.</em></p>
+  </div>
+  <div style="text-align: center;">
+    <img src="image/efficiency_plot.pdf" alt="Training Efficiency" width="400"/>
+    <p><em>Figure 3: Training Efficiency and Performance.</em></p>
+  </div>
+</div>
+
+*(Note: If PDFs do not render natively on GitHub, we recommend converting these images to `.png` and updating the paths).*
+
+## 🚀 Key Features
+
+- **Exclusive SPPO Implementation**: Full support for the Sequence-Level Contextual Bandit formulation with Single-Sample Efficiency ($N=1$).
+- **Efficient & Stable**: Resolves the temporal credit assignment problem in long-horizon CoT tasks while avoiding the computational bottleneck of multi-sampling.
+- **Extreme Memory Efficiency**: Natively supports "Small Critic" architectures (e.g., training a 7B policy with a 1.5B critic), making efficient RL alignment accessible on consumer-grade hardware.
+- **Scalable**: Built on top of `verl`, supporting FSDP and Megatron for training large-scale models.
+
+## 🛠️ Quick Start
+
+### Installation
+
+**Option 1: Automated Setup (Recommended)**
 
 ```bash
 bash uv_verl.sh
 ```
 
-### 2. Run Training
+**Option 2: Manual Setup**
 
-After the environment setup is complete, choose and run the corresponding training script:
-
-#### DeepSeek-R1-Distill-Qwen 1.5B SPPO DeepscaleR Training
 ```bash
+# Create and activate virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -U pip
+
+# Install package in editable mode
+pip install --no-deps -e .
+
+# Add project root to PYTHONPATH
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+```
+
+
+## ⚙️ Training with SPPO
+
+We provide pre-configured scripts for various model sizes and settings. 
+
+```bash
+# 1. DeepSeek-R1-Distill-Qwen 1.5B (SPPO DeepscaleR)
 bash run_scripts/run_ds1.5B_PPO_SEQUENCE_shuffle.sh
-```
 
-#### DeepSeek-R1-Distill-Qwen 7B DAPO-17k Training
-```bash
+# 2. DeepSeek-R1-Distill-Qwen 7B (DAPO-17k)
 bash run_scripts/run_R1-7B_DAPO_SEQUENCE.sh
-```
 
-#### DeepSeek-R1-Distill-Qwen 7B DAPO-17k  with Small Critic Training
-```bash
+# 3. DeepSeek-R1-Distill-Qwen 7B (DAPO-17k with Small Critic)
+# Utilizes a 1.5B critic to align the 7B policy.
 bash run_scripts/run_R1-7B_DAPO_SEQUENCE_small_critic.sh
 ```
 
-## Project Structure
+## 📊 Evaluation
 
+Models can be evaluated on the provided AIME24/25, AMC23, MATH, and Minerva benchmarks out of the box using the `verl` evaluation toolkit. Training logs and checkpoints will automatically be populated in the current working directory.
+
+## 📜 Citation
+
+If you find SPPO useful for your research, please cite our paper:
+
+```bibtex
+@misc{wang2026spposequencelevelppolonghorizon,
+      title={SPPO: Sequence-Level PPO for Long-Horizon Reasoning Tasks}, 
+      author={Tianyi Wang and Yixia Li and Long Li and Yibiao Chen and Shaohan Huang and Yun Chen and Peng Li and Yang Liu and Guanhua Chen},
+      year={2026},
+      eprint={2604.08865},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2604.08865}, 
+}
 ```
-.
-├── data/                    # Training and evaluation data
-├── verl/                    # Core library
-├── run_scripts/             # Training launch scripts
-├── scripts/                 # Utility scripts
-└── uv_verl.sh              # Environment setup script
-```
-
-## Data Preparation
-
-Ensure the following data files are available:
-- `data/deepscaler-math.parquet` - Training data for 1.5B model
-- `data/dapo-math-17k_dedup.parquet` - Training data for 7B model
-- `data/offline_eval/math__aime_repeated_8x_240.parquet` - AIME24 test set
-- `data/offline_eval/math__math_500.parquet` - MATH test set
-- `data/offline_eval/math__amc23_2025.parquet` - AMC23 test set
-- `data/offline_eval/math__aime2025_2025.parquet` - AIME25 test set
-- `data/offline_eval/math__minerva_math_2025_processed.parquet` - MINERVA test set
-
-
-## Notes
-
-- First-time run will download models, ensure you have a stable internet connection
-- Multi-GPU environment is recommended for better training performance
-- Training logs and checkpoints will be saved in the working directory
